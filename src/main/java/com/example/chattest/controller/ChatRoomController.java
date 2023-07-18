@@ -26,7 +26,6 @@ public class ChatRoomController {
         return "/kakao/chat";
     }
 
-
     @GetMapping("/friends")
     public String friends(Model model) {
         return "/kakao/friends";
@@ -45,6 +44,16 @@ public class ChatRoomController {
     @GetMapping("/settings")
     public String settings(Model model) {
         return "/kakao/settings";
+    }
+
+    @GetMapping("/login")
+    public String login(Model model) {
+        return "/kakao/index";
+    }
+
+    @GetMapping("/signup")
+    public String signup(Model model) {
+        return "/kakao/signup";
     }
 
     // 모든 채팅방 목록 반환
