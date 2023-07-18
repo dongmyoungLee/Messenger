@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+
+<head>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chats</title>
+</head>
+
+<body>
+    <div class="status-bar">
+        <div class="status-bar__column">
+            <span>No Service</span>
+            <i class="fas fa-wifi"></i>
+        </div>
+        <div class="status-bar__column">
+            <span>18:43</span>
+        </div>
+        <div class="status-bar__column">
+            <span>100%</span>
+            <i class="fas fa-battery-full"></i>
+            <i class="fas fa-bolt"></i>
+        </div>
+    </div>
+
+    <header class="screen-header">
+        <h1 class="screen-header__title">chats</h1>
+        <div class="screen-header__icons">
+            <span><i class="fas fa-search fa-lg"></i></span>
+            <span><i class="far fa-comment-dots fa-lg"></i></span>
+            <span><i class="fas fa-music fa-lg"></i></span>
+            <span><i class="fas fa-cog fa-lg"></i></span>
+        </div>
+    </header>
+<!--    <div class="container" id="app" v-cloak>-->
+<!--        <div class="row">-->
+<!--            <div class="col-md-12">-->
+<!--                <h3>채팅방 리스트</h3>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="input-group">-->
+<!--            <div class="input-group-prepend">-->
+<!--                <label class="input-group-text">방제목</label>-->
+<!--            </div>-->
+<!--            <input type="text" class="form-control" v-model="room_name" v-on:keyup.enter="createRoom">-->
+<!--            <div class="input-group-append">-->
+<!--                <button class="btn btn-primary" type="button" @click="createRoom">채팅방 개설</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <ul class="list-group">-->
+<!--            <li class="list-group-item list-group-item-action" v-for="item in chatrooms" v-bind:key="item.roomId" v-on:click="enterRoom(item.roomId)">-->
+<!--                {{item.roomName}}-->
+<!--            </li>-->
+<!--        </ul>-->
+<!--    </div>-->
+
+    <main class="main-screen">
+        <a href="/chat/chat">
+            <div class="user-component">
+                <div class="user-component__column">
+                    <img src="https://blogpfthumb-phinf.pstatic.net/MjAyMjA2MTVfMTI4/MDAxNjU1MzAzNTE0MTk4.pFBXGkLSJXpkGWbpiQYa6DoNZRsd96UMYWGN_3CzUJsg.cwzSkwkQyE-aP5AWhsETyT_LZR7A6cjGTpb1zjSiKMog.JPEG.tpdls960/profileImage.jpg?type=w161"
+                        class="user-component__avatar user-component__avatar">
+                    <div class="user-component__text">
+                        <h4 class="user-component__title">이세인</h4>
+                        <h6 class="user-component__subtitle">야 너 프론트엔드 개발자 취업했다며?</h6>
+                    </div>
+                </div>
+                <div class="user-component__column">
+                    <span class="user-component__time">21:22</span>
+                    <div class="badge">1</div>
+                </div>
+            </div>
+        </a>
+    </main>
+
+    <nav class="nav">
+        <ul class="nav__list">
+            <li class="nav__btn">
+                <a class="nav__link" href="/chat/friends"><i class="far fa-user fa-2x"></i></a>
+            </li>
+            <li class="nav__btn">
+                <a class="nav__link" href="/chat/chats">
+                    <span class="nav__notification badge">1</span>
+                    <i class="fas fa-comment fa-2x"></i>
+                </a>
+            </li>
+            <li class="nav__btn">
+                <a class="nav__link" href="/chat/find"><i class="fas fa-search fa-2x"></i>
+                </a>
+            </li>
+            <li class="nav__btn">
+                <a class="nav__link" href="/chat/more"><i class="fas fa-ellipsis-h fa-2x"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div id="no-mobile">
+        <span>650px 이하로 픽셀을 줄여주세요</span>
+    </div>
+    <script src="https://kit.fontawesome.com/6478f529f2.js" crossorigin="anonymous"></script><script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>
+    <script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
+    <script>
+      var vm = new Vue({
+        el: '#app',
+        data: {
+          room_name : '',
+          chatrooms: [
+          ]
+        },
+        created() {
+          this.findAllRoom();
+        },
+        methods: {
+          findAllRoom: function() {
+            axios.get('/chat/rooms').then(response => { this.chatrooms = response.data; });
+          },
+          createRoom: function() {
+            if("" === this.room_name) {
+              alert("방 제목을 입력해 주십시요.");
+              return;
+            } else {
+              var params = new URLSearchParams();
+              params.append("name",this.room_name);
+              axios.post('/chat/room', params)
+                .then(
+                  response => {
+                    alert(response.data.roomName+"방 개설에 성공하였습니다.")
+                    this.room_name = '';
+                    this.findAllRoom();
+                  }
+                )
+                .catch( response => { alert("채팅방 개설에 실패하였습니다."); } );
+            }
+          },
+          enterRoom: function(roomId) {
+            var sender = prompt('대화명을 입력해 주세요.');
+            if(sender !== "") {
+              localStorage.setItem('wschat.sender',sender);
+              localStorage.setItem('wschat.roomId',roomId);
+              location.href="/chat/room/enter/"+roomId;
+            }
+          }
+        }
+      });
+    </script>
+
+</body>
+
+</html>
