@@ -37,26 +37,49 @@
         </p>
     </header>
 
-    <form action="/chat/friends" id="login-form">
-        <div style="display: flex; justify-content: space-between">
-            <input style="width: 85%;" type="text" placeholder="Email">
-            <button style="display: flex; justify-content: center; align-items: center; height: 43px; border: none; background-color: #fae100; cursor: pointer; padding: 15px;border-radius: 5px; outline: none;">
-                <p>인증</p></button>
-        </div>
-        <div>
-            <input style="width: 100%;" type="text" placeholder="Email Valid Number">
-        </div>
-        <div>
-            <input style="width: 100%;" type="password" placeholder="password">
-        </div>
-        <div>
-            <input style="width: 100%;" type="name" placeholder="name">
-        </div>
-        <input type="submit" value="Sign up" style="width: 100%;" class="target">
-        <a href="#">Find KaKao Account of password</a>
-    </form>
+    <div id="signup">
+        <form action="/chat/friends" id="login-form">
+            <div style="display: flex; justify-content: space-between">
+                <input style="width: 85%;" type="text" placeholder="Email">
+                <button type='button' @click="mailValidBtn" style="display: flex; justify-content: center; align-items: center; height: 43px; border: none; background-color: #fae100; cursor: pointer; padding: 15px;border-radius: 5px; outline: none;">
+                    <p>인증</p></button>
+            </div>
+            <div>
+                <input style="width: 100%;" type="text" placeholder="Email Valid Number">
+            </div>
+            <div>
+                <input style="width: 100%;" type="password" placeholder="password">
+            </div>
+            <div>
+                <input style="width: 100%;" type="name" placeholder="name">
+            </div>
+            <input type="submit" value="Sign up" style="width: 100%;" class="target">
+            <a href="#">Find KaKao Account of password</a>
+        </form>
+    </div>
+
+
 
     <script src="https://kit.fontawesome.com/6478f529f2.js" crossorigin="anonymous"></script>
+    <!-- JavaScript -->
+    <script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>
+    <script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
+    <script>
+      var vm = new Vue({
+        el: '#signup',
+        data: {
+
+        },
+        created() {
+
+        },
+        methods: {
+          mailValidBtn: function() {
+            console.log('asdasdsd');
+          }
+        }
+      });
+    </script>
 </body>
 
 </html>
