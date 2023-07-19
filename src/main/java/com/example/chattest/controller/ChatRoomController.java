@@ -14,6 +14,14 @@ import java.util.List;
 @RequestMapping("/chat")
 public class ChatRoomController {
     private final ChatService chatService;
+    @GetMapping("/chat1")
+    public String rooms2(Model model) {
+        return "/chat/room";
+    }
+    @GetMapping("/chat2")
+    public String rooms3(Model model) {
+        return "/room/roomdetail";
+    }
 
     // 채팅 리스트 화면
     @GetMapping("/chats")
@@ -28,6 +36,7 @@ public class ChatRoomController {
 
     @GetMapping("/friends")
     public String friends(Model model) {
+
         return "/kakao/friends";
     }
 

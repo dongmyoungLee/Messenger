@@ -42,7 +42,7 @@
     <main class="friends-screen">
         <div class="user-component">
             <div class="user-component__column">
-                <img src="https://blogpfthumb-phinf.pstatic.net/MjAyMjA2MTVfMTI4/MDAxNjU1MzAzNTE0MTk4.pFBXGkLSJXpkGWbpiQYa6DoNZRsd96UMYWGN_3CzUJsg.cwzSkwkQyE-aP5AWhsETyT_LZR7A6cjGTpb1zjSiKMog.JPEG.tpdls960/profileImage.jpg?type=w161"
+                <img style="border: 1px solid #eaeaea;" src="https://blogpfthumb-phinf.pstatic.net/MjAyMjA2MTVfMTI4/MDAxNjU1MzAzNTE0MTk4.pFBXGkLSJXpkGWbpiQYa6DoNZRsd96UMYWGN_3CzUJsg.cwzSkwkQyE-aP5AWhsETyT_LZR7A6cjGTpb1zjSiKMog.JPEG.tpdls960/profileImage.jpg?type=w161"
                     class="user-component__avatar user-component__avatar--xl">
                 <div class="Friends' Names Display">
                     <h4 class="user-component__title">이세인</h4>
@@ -51,27 +51,37 @@
             </div>
             <div class="user-component__column"></div>
         </div>
-        <div class="friends-screen__channel">
+        <div id="app" class="friends-screen__channel">
             <div class="friends-screen__channel-header">
-                <span>Friends</span>
-                <i class="fas fa-chevron-up fa-xs"></i>
+                <span style="margin-right: 5px;">Friends</span>
+                <span>({{friendShip.length}})</span>
+<!--                <i class="fas fa-chevron-up fa-xs"></i>-->
             </div>
-<!--            <div class="user-component">-->
+            <div class="user-component">
+                <div style="display: flex; flex-direction: column;">
+                    <div style="margin-bottom: 20px; cursor:pointer; display: flex; flex-direction: row; align-items: center; gap: 10px;" class="user-component__column" v-for="item in friendShip" :key="item.id">
+                        <img style="border: 1px solid #eaeaea;" :src="item.profileImgPath" class="user-component__avatar user-component__avatar--sm">
+                        <div class="user-component__text">
+                            <h4 class="user-component__title user-component__title--not-bold">
+                                {{ item.name }}
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!--            <div id="app" style="margin-bottom: 20px;" class="user-component" v-for="item in friendShip">-->
 <!--                <div class="user-component__column">-->
-<!--                    <img src="#"-->
-<!--                        class="user-component__avatar user-component__avatar&#45;&#45;sm">-->
+<!--                    <img src="#" class="user-component__avatar user-component__avatar&#45;&#45;sm">-->
 <!--                    <div class="user-component__text">-->
-<!--                        <h4 class="user-component__title user-component__title&#45;&#45;not-bold">channel-->
+<!--                        <h4 class="user-component__title user-component__title&#45;&#45;not-bold">-->
+<!--                            {{ item.name }}-->
 <!--                        </h4>-->
 <!--                    </div>-->
 <!--                </div>-->
 <!--                <div class="user-component__column">-->
-<!--                    <div>-->
-<!--                        <span>2</span>-->
-<!--                        <i class="fas fa-chevron-right fa-xs"></i>-->
-<!--                    </div>-->
 <!--                </div>-->
 <!--            </div>-->
+
         </div>
     </main>
 
@@ -106,6 +116,36 @@
     </div>
 
     <script src="https://kit.fontawesome.com/6478f529f2.js" crossorigin="anonymous"></script>
+    <!-- JavaScript -->
+    <script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>
+    <script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
+    <script>
+      var vm = new Vue({
+        el: '#app',
+        data: {
+          room_name : '',
+          friendShip : [],
+        },
+        created() {
+          const vm = this;
+
+          axios.get('/api/v1/user/friendShips/1')
+            .then((res) => {
+              vm.friendShip = res.data.friendShip;
+              console.log(vm.friendShip);
+            })
+            .catch((err) => {
+
+            })
+
+        },
+        methods: {
+          findAllRoom: function() {
+            axios.get('/chat/rooms').then(response => { this.chatrooms = response.data; });
+          }
+        }
+      });
+    </script>
 </body>
 
 </html>
