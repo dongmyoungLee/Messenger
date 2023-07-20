@@ -45,6 +45,12 @@ dependencies {
 	implementation 'org.webjars.bower:vue:2.5.16'
 	implementation 'org.webjars.bower:axios:0.17.1'
 	implementation 'com.google.code.gson:gson:2.8.0'
+
+	//mail
+	implementation 'javax.mail:javax.mail-api:1.6.2'
+	implementation 'com.sun.mail:javax.mail:1.6.2'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 }
 
 tasks.named('test') {
