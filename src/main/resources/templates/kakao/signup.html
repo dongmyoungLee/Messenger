@@ -2,8 +2,7 @@
 <html lang="en">
 
 <head>
-<!--    <link rel="stylesheet" href="/static/css/style.css">-->
-    <link rel="stylesheet" href="../../static/css/style.css">
+    <link rel="stylesheet" href="/static/css/style.css">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,21 +37,25 @@
     </header>
 
     <div id="signup">
-        <form action="/chat/friends" id="login-form">
+        <form action="/api/v1/user/signup" method="post" id="login-form">
             <div style="display: flex; justify-content: space-between">
-                <input style="width: 85%;" type="text" placeholder="Email">
+                <input name="email" style="width: 85%;" type="text" placeholder="Email">
                 <button type='button' @click="mailValidBtn" style="display: flex; justify-content: center; align-items: center; height: 43px; border: none; background-color: #fae100; cursor: pointer; padding: 15px;border-radius: 5px; outline: none;">
                     <p>인증</p></button>
             </div>
             <div>
-                <input style="width: 100%;" type="text" placeholder="Email Valid Number">
+                <input name="validNum" style="width: 100%;" type="text" placeholder="Email Valid Number">
             </div>
             <div>
-                <input style="width: 100%;" type="password" placeholder="password">
+                <input name="password" style="width: 100%;" type="password" placeholder="password">
             </div>
             <div>
-                <input style="width: 100%;" type="name" placeholder="name">
+                <input name="name" style="width: 100%;" type="name" placeholder="name">
             </div>
+            <div>
+                <input name="profileImgPath" style="width: 100%;" type="text" placeholder="profile img path">
+            </div>
+
             <input type="submit" value="Sign up" style="width: 100%;" class="target">
             <a href="#">Find KaKao Account of password</a>
         </form>
