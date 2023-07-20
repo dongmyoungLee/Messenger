@@ -42,7 +42,7 @@
 <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
 <script>
   //alert(document.title);
-  // websocket & stomp initialize
+  // websocket & stomp inito1ialize
   var sock = new SockJS("/ws/chat");
   var ws = Stomp.over(sock);
   var reconnect = 0;
@@ -62,6 +62,7 @@
       this.findRoom();
     },
     methods: {
+
       findRoom: function() {
         axios.get('/chat/room/'+this.roomId).then(response => { this.room = response.data; });
       },

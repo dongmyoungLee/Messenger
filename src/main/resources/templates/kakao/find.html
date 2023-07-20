@@ -11,7 +11,7 @@
             display: none;
         }
     </style>
-    <title>Find</title>
+    <title>OpenChat</title>
 </head>
 
 <body>
@@ -30,27 +30,29 @@
         </div>
     </div>
 
-    <header class="screen-header">
-        <h1 class="screen-header__title">Find</h1>
+    <header class="screen-header" style="padding-bottom: 0px; margin-bottom: 0px;">
+        <h1 class="screen-header__title">chats</h1>
         <div class="screen-header__icons">
             <span><i class="fas fa-search fa-lg"></i></span>
+            <span><i class="far fa-comment-dots fa-lg"></i></span>
+            <span><i class="fas fa-music fa-lg"></i></span>
             <span><i class="fas fa-cog fa-lg"></i></span>
         </div>
     </header>
 
-    <main class="main-screen">
-        <div class="icon-row">
-            <div class="icon-row__icon"><i class="fas fa-qrcode"></i><span>QR Code</span>
-            </div>
-            <div class="icon-row__icon"><i class="far fa-address-book"></i><span>Add by Contacts</span></div>
-            <div class="icon-row__icon"><i class="fas fa-fingerprint"></i><span>Add by ID</span></div>
-            <div class="icon-row__icon"><i class="far fa-envelope"></i><span>Invite</span></div>
-        </div>
-        <div class="recommended-friends">
-            <h6 style="margin-top: 5px; margin-bottom: 10px;" class="recommended-friends__title">Open Chat</h6>
-            <div class="container" id="app" v-cloak>
+    <main class="main-screen" style="padding-bottom: 80px;">
+<!--        <div class="icon-row">-->
+<!--            <div class="icon-row__icon"><i class="fas fa-qrcode"></i><span>QR Code</span>-->
+<!--            </div>-->
+<!--            <div class="icon-row__icon"><i class="far fa-address-book"></i><span>Add by Contacts</span></div>-->
+<!--            <div class="icon-row__icon"><i class="fas fa-fingerprint"></i><span>Add by ID</span></div>-->
+<!--            <div class="icon-row__icon"><i class="far fa-envelope"></i><span>Invite</span></div>-->
+<!--        </div>-->
+        <div class="recommended-friends" style="padding-bottom: 20px;">
+            <h6 style="margin-top: 5px; margin-bottom: 20px;" class="recommended-friends__title">Open Chat</h6>
+            <div class="container" style="min-height: 400px; position: relative;" id="app" v-cloak>
                 <div class="input-group" style="display: flex; justify-content: center; margin-bottom: 10px;">
-                    <input placeholder="채팅방 이름 검색" style="padding-left: 10px; box-sizing: border-box;width: 90%; height: 35px;border-radius: 10px;border: none; outline:none; background: #efefef;" type="text" class="form-control" v-model="room_name" v-on:keyup.enter="createRoom">
+                    <input @input ="filterChatrooms" placeholder="채팅방 이름 검색" style="padding-left: 10px; box-sizing: border-box;width: 90%; height: 35px;border-radius: 10px;border: none; outline:none; background: #efefef;" type="text" class="form-control" v-model="room_name" v-on:keyup.enter="createRoom">
                 </div>
                 <div style="margin-bottom: 15px; padding-right: 22px; display: flex; justify-content: flex-end;" class="input-group-append">
                     <button style="background: #fff;border: 1px solid #efefef;cursor: pointer;" class="btn btn-primary" type="button" @click="createRoom">+ 만들기</button>
@@ -60,35 +62,35 @@
                         {{item.roomName}}
                     </li>
                 </ul>
-            </div>
-            <span class="noChat">개설된 오픈채팅방이 없습니다.</span>
-        </div>
-        <div class="open-chat">
-            <div class="open-chat__header">
-                <h4>Open Chat</h4>
-                <span>Go to Openchat Home<i class="fas fa-chevron-right fa-xs"></i></span>
-            </div>
-            <div class="open-post">
-                <div class="open-post__column">
-                    <h5 class="open-post__title">#BTS</h5>
-                    <h6 class="open-post__hashtags">#bts#army#friends</h6>
-                    <div class="open-post__members">
-                        <img src="#">
-                        <span class="open-post__member-count">802 members</span>
-                        <div class="divider"></div>
-                        <span class="open-post__member-status">Active</span>
-                    </div>
-                </div>
-                <div class="open-post__column">
-                    <div class="open-post__photo">
-                        <img src="" alt="">
-                        <div class="open-post__heart-count">
-                            <i class="fas fa-heart"></i><span>100</span>
-                        </div>
-                    </div>
-                </div>
+                <p v-if="chatrooms.length == 0" style="text-align: center; font-size: 16px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">개설된 오픈채팅방이 없습니다.</p>
             </div>
         </div>
+<!--        <div class="open-chat">-->
+<!--            <div class="open-chat__header">-->
+<!--                <h4>Open Chat</h4>-->
+<!--                <span>Go to Openchat Home<i class="fas fa-chevron-right fa-xs"></i></span>-->
+<!--            </div>-->
+<!--            <div class="open-post">-->
+<!--                <div class="open-post__column">-->
+<!--                    <h5 class="open-post__title">#BTS</h5>-->
+<!--                    <h6 class="open-post__hashtags">#bts#army#friends</h6>-->
+<!--                    <div class="open-post__members">-->
+<!--                        <img src="#">-->
+<!--                        <span class="open-post__member-count">802 members</span>-->
+<!--                        <div class="divider"></div>-->
+<!--                        <span class="open-post__member-status">Active</span>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="open-post__column">-->
+<!--                    <div class="open-post__photo">-->
+<!--                        <img src="" alt="">-->
+<!--                        <div class="open-post__heart-count">-->
+<!--                            <i class="fas fa-heart"></i><span>100</span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
     </main>
 
     <nav class="nav">
@@ -97,15 +99,15 @@
                 <a class="nav__link" href="/chat/friends"><i class="far fa-user fa-2x"></i></a>
             </li>
             <li class="nav__btn">
-                <a class="nav__link" href="/chat/chats">
+                <a class="nav__link" href="/chat/find">
                     <span class="nav__notification badge">1</span>
                     <i class="fas fa-comment fa-2x"></i>
                 </a>
             </li>
-            <li class="nav__btn">
-                <a class="nav__link" href="/chat/find"><i class="fas fa-search fa-2x"></i>
-                </a>
-            </li>
+<!--            <li class="nav__btn">-->
+<!--                <a class="nav__link" href="/chat/find"><i class="fas fa-search fa-2x"></i>-->
+<!--                </a>-->
+<!--            </li>-->
             <li class="nav__btn">
                 <a class="nav__link" href="/chat/more"><i class="fas fa-ellipsis-h fa-2x"></i>
                 </a>
@@ -126,14 +128,38 @@
         data: {
           room_name : '',
           chatrooms: [
+          ],
+          allChatrooms : [
+
           ]
         },
         created() {
           this.findAllRoom();
         },
         methods: {
+          filterChatrooms: function(e) {
+            const vm = this;
+            const keyword = e.target.value.toLowerCase(); // 입력한 검색어를 소문자로 변환하여 대소문자 구분 없이 비교할 수 있도록 함.
+
+            // 검색어가 비어있을 때는 전체 채팅방을 보여주도록 처리
+            if (keyword === '') {
+              vm.chatrooms = vm.allChatrooms; // allChatrooms 배열에 전체 채팅방 정보가 담겨 있다고 가정하고, 이를 chatrooms에 덮어쓰기
+            } else {
+              // 필터링 조건에 해당하는 새로운 chatrooms 배열 생성
+              const filteredChatrooms = vm.allChatrooms.filter((room) => {
+                const roomName = room.roomName.toLowerCase(); // 배열의 각 채팅방 이름도 소문자로 변환하여 대소문자 구분 없이 비교할 수 있도록 함.
+                return roomName.includes(keyword); // name 필드가 검색어를 포함하는지 확인하여 해당하는 채팅방만 필터링
+              });
+
+              // 기존의 chatrooms 배열을 새로운 필터링된 배열로 덮어쓰기
+              vm.chatrooms = filteredChatrooms;
+            }
+          },
           findAllRoom: function() {
-            axios.get('/chat/rooms').then(response => { this.chatrooms = response.data; });
+            axios.get('/chat/rooms').then(response => {
+              this.chatrooms = response.data;
+              this.allChatrooms = response.data;
+            });
           },
           createRoom: function() {
 
@@ -143,6 +169,8 @@
               alert("방 제목을 입력해 주십시오.");
               return;
             }
+
+            localStorage.setItem('roomName',roomName);
 
               var params = new URLSearchParams();
               params.append("name", roomName);

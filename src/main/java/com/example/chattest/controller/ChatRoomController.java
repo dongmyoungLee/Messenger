@@ -64,6 +64,10 @@ public class ChatRoomController {
     public String signup(Model model) {
         return "/kakao/signup";
     }
+    @GetMapping("/openChat")
+    public String openChat(Model model) {
+        return "/kakao/openChat";
+    }
 
     // 모든 채팅방 목록 반환
     @GetMapping("/rooms")
@@ -79,11 +83,10 @@ public class ChatRoomController {
         return chatService.createRoom(name);
     }
     // 채팅방 입장 화면
-
     @GetMapping("/room/enter/{roomId}")
-    public String roomDetail(Model model, @PathVariable String roomId) {
+    public String roomDetail1(Model model, @PathVariable String roomId) {
         model.addAttribute("roomId", roomId);
-        return "/chat/roomdetail";
+        return "/kakao/openChat";
     }
     // 특정 채팅방 조회
     @GetMapping("/room/{roomId}")
