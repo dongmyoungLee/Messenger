@@ -2,6 +2,7 @@ package com.example.chattest.controller;
 
 import com.example.chattest.dto.ChatRoom;
 import com.example.chattest.service.ChatService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,44 +15,62 @@ import java.util.List;
 @RequestMapping("/chat")
 public class ChatRoomController {
     private final ChatService chatService;
-    @GetMapping("/chat1")
-    public String rooms2(Model model) {
-        return "/chat/room";
-    }
-    @GetMapping("/chat2")
-    public String rooms3(Model model) {
-        return "/room/roomdetail";
-    }
 
     // 채팅 리스트 화면
     @GetMapping("/chats")
-    public String rooms(Model model) {
+    public String rooms(Model model, HttpSession session) {
+        if (session.getAttribute("userName") == null) {
+            return "/kakao/index";
+        }
         return "/kakao/chats";
     }
 
     @GetMapping("/chat")
-    public String chat(Model model) {
+    public String chat(Model model, HttpSession session
+    ) {
+        if (session.getAttribute("userName") == null) {
+            return "/kakao/index";
+        }
         return "/kakao/chat";
     }
 
     @GetMapping("/friends")
-    public String friends(Model model) {
+    public String friends(Model model, HttpSession session) {
+        // 세션에서 user_seq 값을 가져와서 userName 변수에 저장합니다.
+        Long userSeq = (Long) session.getAttribute("user_seq");
 
-        return "/kakao/friends";
+        // 세션에 user_seq 값이 없으면 로그인 페이지로 리다이렉트합니다.
+        if (userSeq == null) {
+            return "redirect:/kakao/index";
+        }
+
+        // 세션에 user_seq 값이 있으면 해당 값과 뷰를 반환합니다.
+        model.addAttribute("userSeq", userSeq);
+
+        return "kakao/friends";
     }
 
     @GetMapping("/find")
-    public String find(Model model) {
+    public String find(Model model, HttpSession session) {
+        if (session.getAttribute("userName") == null) {
+            return "/kakao/index";
+        }
         return "/kakao/find";
     }
 
     @GetMapping("/more")
-    public String more(Model model) {
+    public String more(Model model, HttpSession session) {
+        if (session.getAttribute("userName") == null) {
+            return "/kakao/index";
+        }
         return "/kakao/more";
     }
 
     @GetMapping("/settings")
-    public String settings(Model model) {
+    public String settings(Model model, HttpSession session) {
+        if (session.getAttribute("userName") == null) {
+            return "/kakao/index";
+        }
         return "/kakao/settings";
     }
 
@@ -65,7 +84,10 @@ public class ChatRoomController {
         return "/kakao/signup";
     }
     @GetMapping("/openChat")
-    public String openChat(Model model) {
+    public String openChat(Model model, HttpSession session) {
+        if (session.getAttribute("userName") == null) {
+            return "/kakao/index";
+        }
         return "/kakao/openChat";
     }
 

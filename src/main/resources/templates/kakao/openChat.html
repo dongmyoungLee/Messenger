@@ -16,8 +16,6 @@
         ::-webkit-scrollbar-thumb {
             background-color: rgba(0, 0, 0, 0);
         }
-
-
     </style>
 </head>
 
@@ -42,7 +40,7 @@
 
     <header class="alt-header" style="padding-bottom: 10px">
     <div class="alt-header__column">
-        <a href="/chat/chats">
+        <a href="/chat/find">
             <i class="fas fa-angle-left fa-3x"></i>
         </a>
     </div>
@@ -61,7 +59,7 @@
         </div>
 
         <div class="message-row" v-for="message in messages" :class="{ 'message-row--own': isCurrentUser(message.sender) }">
-            <img src="https://blogpfthumb-phinf.pstatic.net/MjAyMjA2MTVfMTI4/MDAxNjU1MzAzNTE0MTk4.pFBXGkLSJXpkGWbpiQYa6DoNZRsd96UMYWGN_3CzUJsg.cwzSkwkQyE-aP5AWhsETyT_LZR7A6cjGTpb1zjSiKMog.JPEG.tpdls960/profileImage.jpg?type=w161" alt="">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlETyc4RCQOt5YVtW2mbRuR3wdxFVDD8R6BA&usqp=CAU" alt="">
             <div class="message-row_content">
                 <span class="message__author">{{ message.sender }}</span>
                 <div class="message__info">
@@ -124,7 +122,8 @@
       sender: '',
       message: '',
       roomName : localStorage.getItem("roomName"),
-      messages: []
+      messages: [],
+      sayCount: 0
     },
     watch: {
       messages: {
@@ -138,6 +137,7 @@
       this.roomId = localStorage.getItem('wschat.roomId');
       this.sender = localStorage.getItem('wschat.sender');
       this.findRoom();
+      ws.send("/app/chat/message", {}, JSON.stringify({type:'TALK', roomId:'CHECK', sender:'CHECK', message:'CHECK'}));
     },
     methods: {
       scrollToBottom() {
@@ -185,10 +185,12 @@
   function connect() {
     // pub/sub event
     ws.connect({}, function(frame) {
+
       ws.subscribe("/topic/chat/room/"+vm.$data.roomId, function(message) {
         var recv = JSON.parse(message.body);
         vm.recvMessage(recv);
       });
+
       ws.send("/app/chat/message", {}, JSON.stringify({type:'ENTER', roomId:vm.$data.roomId, sender:vm.$data.sender}));
     }, function(error) {
       if(reconnect++ <= 5) {

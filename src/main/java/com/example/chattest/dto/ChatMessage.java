@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ChatMessage {
     public enum MessageType {
-        ENTER, TALK
+        ENTER, TALK, ROOMCOUNT
     }
 
     private MessageType type;
@@ -19,4 +19,6 @@ public class ChatMessage {
     private String sender;
     //내용
     private String message;
+
+    private Integer count;
 }

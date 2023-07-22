@@ -37,14 +37,14 @@
     </header>
 
     <div id="signup">
-        <form action="/api/v1/user/signup" method="post" id="login-form">
+        <form @submit="loginSubmit" action="/api/v1/user/signup" method="post" id="login-form">
             <div style="display: flex; justify-content: space-between">
-                <input name="email" style="width: 85%;" type="text" placeholder="Email">
+                <input @input="saveEmail" name="email" style="width: 85%;" type="text" placeholder="Email">
                 <button type='button' @click="mailValidBtn" style="display: flex; justify-content: center; align-items: center; height: 43px; border: none; background-color: #fae100; cursor: pointer; padding: 15px;border-radius: 5px; outline: none;">
                     <p>인증</p></button>
             </div>
             <div>
-                <input name="validNum" style="width: 100%;" type="text" placeholder="Email Valid Number">
+                <input @input="validNumHandler" name="validNum" style="width: 100%;" type="text" placeholder="Email Valid Number">
             </div>
             <div>
                 <input name="password" style="width: 100%;" type="password" placeholder="password">
@@ -71,14 +71,36 @@
       var vm = new Vue({
         el: '#signup',
         data: {
-
+            validNum : '',
+            email: '',
+          inputValidNum : '',
         },
         created() {
 
         },
         methods: {
+          loginSubmit(e) {
+            e.preventDefault();
+
+            if (vm.validNum !== vm.inputValidNum) {
+              alert('인증번호가 일치하지 않습니다.');
+            } else {
+              alert('인증번호가 일치합니다.');
+            }
+          },
           mailValidBtn: function() {
-            console.log('asdasdsd');
+            axios.post(`/api/v1/mail/${this.email}`)
+              .then(response => {
+                this.validNum = response.data; // 서버로부터 받은 채팅방 수를 업데이트
+                alert("메일의 인증번호를 입력란에 입력해주세요.");
+              })
+              .catch(error => { console.error("이메일 인증 에러", error); });
+          },
+          saveEmail: function(event) {
+            this.email = event.target.value; // 사용자가 입력한 이메일 값을 Vue 인스턴스의 데이터에 저장
+          },
+          validNumHandler: function(event) {
+            this.inputValidNum = event.target.value;
           }
         }
       });

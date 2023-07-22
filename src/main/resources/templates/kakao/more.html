@@ -34,13 +34,13 @@
         </div>
     </header>
 
-    <main class="main-screen more-screen">
+    <main id="app" class="main-screen more-screen">
         <div class="user-component">
             <div class="user-component__column">
-                <img src="https://blogpfthumb-phinf.pstatic.net/MjAyMjA2MTVfMTI4/MDAxNjU1MzAzNTE0MTk4.pFBXGkLSJXpkGWbpiQYa6DoNZRsd96UMYWGN_3CzUJsg.cwzSkwkQyE-aP5AWhsETyT_LZR7A6cjGTpb1zjSiKMog.JPEG.tpdls960/profileImage.jpg?type=w161"
+                <img :src="userProfile"
                     class="user-component__avatar user-component__avatar--xl">
                 <div class="user-component__text">
-                    <h4 class="user-component__title">이세인</h4>
+                    <h4 class="user-component__title">{{userName}}</h4>
                     <h6 class="user-component__subtitle"> 010 1234 5678<span><i
                                 class="fas fa-exclamation-circle"></i></span></h6>
                 </div>
@@ -103,6 +103,38 @@
         <span>650px이하로 픽셀을 줄여주세요</span>
     </div>
     <script src="https://kit.fontawesome.com/6478f529f2.js" crossorigin="anonymous"></script>
+    <!-- JavaScript -->
+    <script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>
+    <script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
+    <script>
+      var vm = new Vue({
+        el: '#app',
+        data: {
+          room_name : '',
+          friendShip : [],
+          userName : '',
+          userProfile : '',
+        },
+        created() {
+          const vm = this;
+
+          axios.get(`/api/v1/user/info/1`)
+            .then((res) => {
+              vm.userName = res.data.name;
+              vm.userProfile = res.data.profileImgPath;
+            })
+            .catch((err) => {
+              // 에러 처리 코드
+            });
+
+        },
+        methods: {
+          findAllRoom: function() {
+            axios.get('/chat/rooms').then(response => { this.chatrooms = response.data; });
+          }
+        }
+      });
+    </script>
 </body>
 
 </html>
