@@ -2,6 +2,7 @@ package com.example.chattest.controller;
 
 import com.example.chattest.dto.ChatRoom;
 import com.example.chattest.service.ChatService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,32 +18,59 @@ public class ChatRoomController {
 
     // 채팅 리스트 화면
     @GetMapping("/chats")
-    public String rooms(Model model) {
+    public String rooms(Model model, HttpSession session) {
+        if (session.getAttribute("userName") == null) {
+            return "/kakao/index";
+        }
         return "/kakao/chats";
     }
 
     @GetMapping("/chat")
-    public String chat(Model model) {
+    public String chat(Model model, HttpSession session
+    ) {
+        if (session.getAttribute("userName") == null) {
+            return "/kakao/index";
+        }
         return "/kakao/chat";
     }
 
     @GetMapping("/friends")
-    public String friends(Model model) {
-        return "/kakao/friends";
+    public String friends(Model model, HttpSession session) {
+        // 세션에서 user_seq 값을 가져와서 userName 변수에 저장합니다.
+        Long userSeq = (Long) session.getAttribute("user_seq");
+
+        // 세션에 user_seq 값이 없으면 로그인 페이지로 리다이렉트합니다.
+        if (userSeq == null) {
+            return "redirect:/kakao/index";
+        }
+
+        // 세션에 user_seq 값이 있으면 해당 값과 뷰를 반환합니다.
+        model.addAttribute("userSeq", userSeq);
+
+        return "kakao/friends";
     }
 
     @GetMapping("/find")
-    public String find(Model model) {
+    public String find(Model model, HttpSession session) {
+        if (session.getAttribute("userName") == null) {
+            return "/kakao/index";
+        }
         return "/kakao/find";
     }
 
     @GetMapping("/more")
-    public String more(Model model) {
+    public String more(Model model, HttpSession session) {
+        if (session.getAttribute("userName") == null) {
+            return "/kakao/index";
+        }
         return "/kakao/more";
     }
 
     @GetMapping("/settings")
-    public String settings(Model model) {
+    public String settings(Model model, HttpSession session) {
+        if (session.getAttribute("userName") == null) {
+            return "/kakao/index";
+        }
         return "/kakao/settings";
     }
 
@@ -54,6 +82,13 @@ public class ChatRoomController {
     @GetMapping("/signup")
     public String signup(Model model) {
         return "/kakao/signup";
+    }
+    @GetMapping("/openChat")
+    public String openChat(Model model, HttpSession session) {
+        if (session.getAttribute("userName") == null) {
+            return "/kakao/index";
+        }
+        return "/kakao/openChat";
     }
 
     // 모든 채팅방 목록 반환
@@ -70,11 +105,10 @@ public class ChatRoomController {
         return chatService.createRoom(name);
     }
     // 채팅방 입장 화면
-
     @GetMapping("/room/enter/{roomId}")
-    public String roomDetail(Model model, @PathVariable String roomId) {
+    public String roomDetail1(Model model, @PathVariable String roomId) {
         model.addAttribute("roomId", roomId);
-        return "/chat/roomdetail";
+        return "/kakao/openChat";
     }
     // 특정 채팅방 조회
     @GetMapping("/room/{roomId}")

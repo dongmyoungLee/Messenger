@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <style>
+        /* Hide the scrollbar for webkit-based browsers */
+        ::-webkit-scrollbar {
+            width: 0.5em;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0);
+        }
+    </style>
+</head>
+
+<body id="chat-screen">
+<div id="app">
+
+
+    <div class="status-bar">
+        <div class="status-bar__column">
+            <span>No Service</span>
+            <i class="fas fa-wifi"></i>
+        </div>
+        <div class="status-bar__column">
+            <span>18:43</span>
+        </div>
+        <div class="status-bar__column">
+            <span>100%</span>
+            <i class="fas fa-battery-full"></i>
+            <i class="fas fa-bolt"></i>
+        </div>
+    </div>
+
+    <header class="alt-header" style="padding-bottom: 10px">
+    <div class="alt-header__column">
+        <a href="/chat/find">
+            <i class="fas fa-angle-left fa-3x"></i>
+        </a>
+    </div>
+    <div class="alt-header__column">
+        <h1 class="alt-header__title">{{ roomName }}</h1>
+    </div>
+    <div class="alt-header__column">
+        <span><i class="fas fa-search fa-lg"></i></span>
+        <span><i class="fas fa-bars fa-lg"></i></span>
+    </div>
+</header>
+
+    <main class="main-screen main-chat" style="min-height: 604px; max-height: calc(100vh - 150px); overflow-y: auto;">
+        <div class="chat__timestamp">
+            Tuesday, June 30, 2020
+        </div>
+
+        <div class="message-row" v-for="message in messages" :class="{ 'message-row--own': isCurrentUser(message.sender) }">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlETyc4RCQOt5YVtW2mbRuR3wdxFVDD8R6BA&usqp=CAU" alt="">
+            <div class="message-row_content">
+                <span class="message__author">{{ message.sender }}</span>
+                <div class="message__info">
+                    <li style="list-style: none;" class="message__bubble">
+                        {{ message.message }}
+                    </li>
+                    <span class="message__time">{{ getCurrentTime() }}</span>
+                </div>
+            </div>
+        </div>
+
+<!--        <div class="message-row message-row&#45;&#45;own">-->
+<!--            <div class="message-row_content">-->
+<!--                <div class="message__info">-->
+<!--                    <span class="message__bubble">웅 너는 요즘어때? </span>-->
+<!--                    <span class="message__time">21:27</span>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+    </main>
+    <div class="reply"  v-cloak>
+
+            <div class="reply__column">
+                <i class="far fa-plus-square fa-lg"></i>
+            </div>
+            <div class="reply__column">
+                <input type="text"  placeholder="write a message.." v-model="message" v-on:keypress.enter="sendMessage">
+                <i class="far fa-smile-wink fa-lg"></i>
+                <button type="button" @click="sendMessage">
+                    <i class="fas fa-arrow-up"></i>
+                </button>
+            </div>
+
+    </div>
+    <div id="no-mobile">
+        <span> 650px이하로 픽셀을 줄여주세요</span>
+    </div>
+</div>
+
+
+<script src="https://kit.fontawesome.com/6478f529f2.js" crossorigin="anonymous"></script>
+<!-- JavaScript -->
+<script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>
+<script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
+<script src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>
+<script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
+<script>
+  //alert(document.title);
+  // websocket & stomp inito1ialize
+  var sock = new SockJS("/ws/chat");
+  var ws = Stomp.over(sock);
+  var reconnect = 0;
+  // vue.js
+  var vm = new Vue({
+
+    el: '#app',
+    data: {
+      roomId: '',
+      room: {},
+      sender: '',
+      message: '',
+      roomName : localStorage.getItem("roomName"),
+      messages: [],
+      sayCount: 0
+    },
+    watch: {
+      messages: {
+        handler() {
+          this.scrollToBottom();
+        },
+        deep: true
+      }
+    },
+    created() {
+      this.roomId = localStorage.getItem('wschat.roomId');
+      this.sender = localStorage.getItem('wschat.sender');
+      this.findRoom();
+      ws.send("/app/chat/message", {}, JSON.stringify({type:'TALK', roomId:'CHECK', sender:'CHECK', message:'CHECK'}));
+    },
+    methods: {
+      scrollToBottom() {
+        this.$nextTick(() => {
+          const container = this.$el.querySelector('main');
+          console.log(container)
+          if (container) {
+            container.scrollTop = container.scrollHeight * 1.2;
+            console.log(container.scrollTop);
+          }
+        });
+      },
+      isCurrentUser: function (sender) {
+        return sender === this.sender;
+      },
+
+      // 현재 시각을 가져오는 함수 추가
+      getCurrentTime: function () {
+        return this.currentTime;
+      },
+
+      // 현재 시각을 'HH:mm' 형식으로 포맷하는 함수 추가
+      getCurrentFormattedTime: function () {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        return hours + ':' + minutes;
+      },
+
+      findRoom: function() {
+        axios.get('/chat/room/'+this.roomId).then(response => { this.room = response.data; });
+      },
+      sendMessage: function() {
+        ws.send("/app/chat/message", {}, JSON.stringify({type:'TALK', roomId:this.roomId, sender:this.sender, message:this.message}));
+        this.message = '';
+        this.currentTime = this.getCurrentFormattedTime();
+      },
+      recvMessage: function(recv) {
+        this.messages.push({"type":recv.type,"sender":recv.type=='ENTER'?'[알림]':recv.sender,"message":recv.message})
+        this.currentTime = this.getCurrentFormattedTime();
+      }
+    }
+  });
+
+  function connect() {
+    // pub/sub event
+    ws.connect({}, function(frame) {
+
+      ws.subscribe("/topic/chat/room/"+vm.$data.roomId, function(message) {
+        var recv = JSON.parse(message.body);
+        vm.recvMessage(recv);
+      });
+
+      ws.send("/app/chat/message", {}, JSON.stringify({type:'ENTER', roomId:vm.$data.roomId, sender:vm.$data.sender}));
+    }, function(error) {
+      if(reconnect++ <= 5) {
+        setTimeout(function() {
+          console.log("connection reconnect");
+          sock = new SockJS("/ws/chat");
+          ws = Stomp.over(sock);
+          connect();
+        },10*1000);
+      }
+    });
+  }
+  connect();
+</script>
+</body>
+
+</html>

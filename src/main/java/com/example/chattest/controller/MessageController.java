@@ -19,4 +19,12 @@ public class MessageController {
         }
         sendingOperations.convertAndSend("/topic/chat/room/"+message.getRoomId(),message);
     }
+
+    @MessageMapping("/chat/addRoom")
+    public void addRoom(ChatMessage message) {
+        System.out.println(message);
+        sendingOperations.convertAndSend("/topic/chat/addRoom", message);
+    }
+
+
 }

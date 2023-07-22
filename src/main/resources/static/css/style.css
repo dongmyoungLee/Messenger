@@ -26,4 +26,13 @@ body {
 
 .main-screen {
   padding: 0px var(--horizontal-space);
+  overflow-y: auto;
+}
+
+::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0);
 }

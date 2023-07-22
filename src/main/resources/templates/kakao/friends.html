@@ -10,6 +10,7 @@
 </head>
 
 <body>
+<div id="app">
     <div class="status-bar">
         <div class="status-bar__column">
             <span>No Service</span>
@@ -42,10 +43,9 @@
     <main class="friends-screen">
         <div class="user-component">
             <div class="user-component__column">
-                <img src="https://blogpfthumb-phinf.pstatic.net/MjAyMjA2MTVfMTI4/MDAxNjU1MzAzNTE0MTk4.pFBXGkLSJXpkGWbpiQYa6DoNZRsd96UMYWGN_3CzUJsg.cwzSkwkQyE-aP5AWhsETyT_LZR7A6cjGTpb1zjSiKMog.JPEG.tpdls960/profileImage.jpg?type=w161"
-                    class="user-component__avatar user-component__avatar--xl">
+                <img style="margin-right: 40px; border: 1px solid #eaeaea; width: 60px; height: 60px; border-radius: 25px;" :src="userProfile">
                 <div class="Friends' Names Display">
-                    <h4 class="user-component__title">이세인</h4>
+                    <h4 class="user-component__title">{{userName}}</h4>
                     <!-- <h6 class="user-component__subtitle">this text whatever</h6> -->
                 </div>
             </div>
@@ -53,25 +53,35 @@
         </div>
         <div class="friends-screen__channel">
             <div class="friends-screen__channel-header">
-                <span>Friends</span>
-                <i class="fas fa-chevron-up fa-xs"></i>
+                <span style="margin-right: 5px;">Friends</span>
+                <span>({{friendShip.length}})</span>
+<!--                <i class="fas fa-chevron-up fa-xs"></i>-->
             </div>
-<!--            <div class="user-component">-->
+            <div class="user-component">
+                <div style="display: flex; flex-direction: column;">
+                    <div style="margin-bottom: 20px; cursor:pointer; display: flex; flex-direction: row; align-items: center; gap: 10px;" class="user-component__column" v-for="item in friendShip" :key="item.id">
+                        <img style="border: 1px solid #eaeaea;" :src="item.profileImgPath" class="user-component__avatar user-component__avatar--sm">
+                        <div class="user-component__text">
+                            <h4 class="user-component__title user-component__title--not-bold">
+                                {{ item.name }}
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!--            <div id="app" style="margin-bottom: 20px;" class="user-component" v-for="item in friendShip">-->
 <!--                <div class="user-component__column">-->
-<!--                    <img src="#"-->
-<!--                        class="user-component__avatar user-component__avatar&#45;&#45;sm">-->
+<!--                    <img src="#" class="user-component__avatar user-component__avatar&#45;&#45;sm">-->
 <!--                    <div class="user-component__text">-->
-<!--                        <h4 class="user-component__title user-component__title&#45;&#45;not-bold">channel-->
+<!--                        <h4 class="user-component__title user-component__title&#45;&#45;not-bold">-->
+<!--                            {{ item.name }}-->
 <!--                        </h4>-->
 <!--                    </div>-->
 <!--                </div>-->
 <!--                <div class="user-component__column">-->
-<!--                    <div>-->
-<!--                        <span>2</span>-->
-<!--                        <i class="fas fa-chevron-right fa-xs"></i>-->
-<!--                    </div>-->
 <!--                </div>-->
 <!--            </div>-->
+
         </div>
     </main>
 
@@ -80,19 +90,19 @@
             <li class="nav__btn">
                 <a class="nav__link" href="/chat/friends"><i class="fas fa-user fa-2x"></i></a>
             </li>
+
             <li class="nav__btn">
-            <li>
-                <a class="nav__link" href="/chat/chats">
-                    <span class="nav__notification badge">1</span>
+                <a class="nav__link" href="/chat/find">
+                    <span v-if="sayCount != 0" class="nav__notification badge">{{sayCount}}</span>
                     <i class="far fa-comment fa-2x"></i>
                 </a>
             </li>
+
+<!--            <li class="nav__btn">-->
+<!--                <a class="nav__link" href="/chat/find"><i class="fas fa-search fa-2x"></i></a>-->
+<!--            </li>-->
+
             <li class="nav__btn">
-            <li>
-                <a class="nav__link" href="/chat/find"><i class="fas fa-search fa-2x"></i></a>
-            </li>
-            <li class="nav__btn">
-            <li>
                 <a class="nav__link" href="/chat/more"><i class="fas fa-ellipsis-h fa-2x"></i></a>
             </li>
         </ul>
@@ -104,8 +114,109 @@
     <div id="no-mobile">
         <span>650px이하로 픽셀을 줄여주세요</span>
     </div>
+</div>
 
     <script src="https://kit.fontawesome.com/6478f529f2.js" crossorigin="anonymous"></script>
+    <!-- JavaScript -->
+    <script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>
+    <script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
+    <script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>
+    <script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
+    <script src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
+    <script>
+      //alert(document.title);
+      // websocket & stomp inito1ialize
+      var sock = new SockJS("/ws/chat");
+      var ws = Stomp.over(sock);
+      var reconnect = 0;
+
+
+      var vm = new Vue({
+        el: '#app',
+        data: {
+          room_name : '',
+          friendShip : [],
+          userName : '',
+          userProfile : '',
+          sayCount: 0,
+          roomInfo : [],
+        },
+        created() {
+          const vm = this;
+          this.getChatroomCountFromServer();
+
+          if (localStorage.getItem("sayCount") > 1) {
+            this.sayCount = localStorage.getItem("sayCount");
+          }
+
+          axios.get(`/api/v1/user/friendShips/1`)
+            .then((res) => {
+              vm.friendShip = res.data.friendShip;
+            })
+            .catch((err) => {
+              // 에러 처리 코드
+            });
+
+          axios.get(`/api/v1/user/info/1`)
+            .then((res) => {
+              vm.userName = res.data.name;
+              vm.userProfile = res.data.profileImgPath;
+            })
+            .catch((err) => {
+              // 에러 처리 코드
+            });
+
+        },
+        methods: {
+          getChatroomCountFromServer: function() {
+            axios.get('/chat/rooms')
+              .then(response => {
+
+                this.roomInfo = response.data; // 서버로부터 받은 채팅방 수를 업데이트
+              })
+              .catch(error => { console.error("채팅방 수를 가져오는데 실패하였습니다.", error); });
+          },
+          findAllRoom: function() {
+            axios.get('/chat/rooms').then(response => { this.chatrooms = response.data; });
+          }
+        }
+      });
+
+      function connect() {
+        // pub/sub event
+        ws.connect({}, function(frame) {
+          if (vm.roomInfo.length != 0) {
+            vm.roomInfo.forEach((item, idx) => {
+              ws.subscribe("/topic/chat/room/"+item.roomId, function(message) {
+                var recv = JSON.parse(message.body);
+                if(recv.type == 'ENTER') {
+                  vm.sayCount = 0;
+                } else {
+                  vm.sayCount++;
+                }
+                localStorage.setItem("sayCount", vm.sayCount);
+              });
+            })
+          } else {
+            localStorage.setItem("sayCount", 0);
+          }
+
+
+          ws.send("/app/chat/message", {}, JSON.stringify({type:'ENTER', roomId:vm.$data.roomId, sender:vm.$data.sender}));
+        }, function(error) {
+          if(reconnect++ <= 5) {
+            setTimeout(function() {
+              console.log("connection reconnect");
+              sock = new SockJS("/ws/chat");
+              ws = Stomp.over(sock);
+              connect();
+            },10*1000);
+          }
+        });
+      }
+      connect();
+    </script>
 </body>
 
 </html>
